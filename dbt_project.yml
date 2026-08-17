@@ -27,6 +27,9 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   paysim_fintech_transaction_intelligence:
-    # Applies to all files under models/example/
-    example:
+    staging:
       +materialized: view
+    intermediate:
+      +materialized: view
+    # marts:
+    #   +materialized: table
