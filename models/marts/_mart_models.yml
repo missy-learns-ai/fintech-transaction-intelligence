@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: mart_customer_360
+    description: Customer-level analytical mart for lifecycle activity, value, fraud exposure, and customer segmentation.
+    columns:
+      - name: customer_id
+        description: Primary key for the customer.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_segment
+        description: Analytical customer segment based on fraud history, transaction velocity, and transaction value.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['known_fraud', 'high_velocity', 'high_value', 'standard']
+
+  - name: mart_daily_transaction_metrics
+    description: Daily executive metrics for transaction volume, value, active customers, fraud, and flagged activity.
+    columns:
+      - name: transaction_day
+        description: Simulated transaction day.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: transaction_count
+        description: Number of transactions on the simulated day.
+        data_tests:
+          - not_null
+
+      - name: total_transaction_amount
+        description: Total transaction amount on the simulated day.
+        data_tests:
+          - not_null
+
+      - name: fraud_rate
+        description: Share of daily transactions that were fraudulent.
+        data_tests:
+          - not_null
+
+      - name: fraud_amount_rate
+        description: Share of daily transaction value associated with fraud.
+        data_tests:
+          - not_null
+
+  - name: mart_fraud_risk_summary
+    description: Risk-segment summary of transaction volume, amount, fraud exposure, and analytical fraud signal counts.
+    columns:
+      - name: analytical_risk_segment
+        description: Risk segment derived from fraud_signal_score.
+        data_tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: ['critical', 'high', 'medium', 'low']
+
+      - name: transaction_count
+        description: Number of transactions in the risk segment.
+        data_tests:
+          - not_null
+
+      - name: average_fraud_signal_score
+        description: Average number of fraud signals triggered per transaction in the risk segment.
+        data_tests:
+          - not_null
+
+  - name: mart_transaction_type_performance
+    description: Transaction-type performance mart for volume, value, fraud rate, flagged activity, and balance reconciliation metrics.
+    columns:
+      - name: transaction_type
+        description: PaySim transaction type.
+        data_tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: ['CASH_IN', 'CASH_OUT', 'DEBIT', 'PAYMENT', 'TRANSFER']
+
+      - name: transaction_count
+        description: Number of transactions of this type.
+        data_tests:
+          - not_null
+
+      - name: total_transaction_amount
+        description: Total transaction value for this transaction type.
+        data_tests:
+          - not_null
+
+      - name: fraud_rate
+        description: Share of transactions of this type that were fraudulent.
+        data_tests:
+          - not_null
