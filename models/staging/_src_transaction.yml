@@ -1,0 +1,56 @@
+version: 1
+
+sources:
+  - name: paysim
+    description: Raw PaySim source data in Snowflake.
+    database: FINTECH
+    schema: RAW
+    tables:
+      - name: transactions
+        identifier: PAYSIM_TRANSACTIONS
+        columns:
+          - name: step
+            description: Simulated hour number from the start of the dataset.
+            data_tests:
+              - not_null
+
+          - name: type
+            description: PaySim transaction type.
+            data_tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['CASH_IN', 'CASH_OUT', 'DEBIT', 'PAYMENT', 'TRANSFER']
+
+          - name: amount
+            description: Transaction amount.
+            data_tests:
+              - not_null
+
+          - name: nameOrig
+            description: Sender customer/account identifier.
+            data_tests:
+              - not_null
+
+          - name: nameDest
+            description: Recipient customer/account identifier.
+            data_tests:
+              - not_null
+
+          - name: isFraud
+            description: Indicator for actual fraudulent transaction.
+            data_tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: [0, 1]
+                    quote: false
+
+          - name: isFlaggedFraud
+            description: Indicator for transaction flagged by the original rule-based system.
+            data_tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: [0, 1]
+                    quote: false

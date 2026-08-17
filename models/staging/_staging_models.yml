@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: Cleaned and standardized transaction-level staging model for PaySim transactions.
+    columns:
+      - name: transaction_id
+        description: Deterministic transaction identifier generated from raw transaction attributes.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: transaction_step
+        description: Simulated hour number from the start of the dataset.
+        data_tests:
+          - not_null
+
+      - name: transaction_day
+        description: Simulated day derived from transaction_step.
+        data_tests:
+          - not_null
+
+      - name: transaction_hour
+        description: Simulated hour of day derived from transaction_step.
+        data_tests:
+          - not_null
+
+      - name: transaction_type
+        description: Standardized transaction type.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['CASH_IN', 'CASH_OUT', 'DEBIT', 'PAYMENT', 'TRANSFER']
+
+      - name: transaction_amount
+        description: Transaction amount.
+        data_tests:
+          - not_null
+
+      - name: sender_customer_id
+        description: Sender customer/account identifier.
+        data_tests:
+          - not_null
+
+      - name: recipient_id
+        description: Recipient customer/account identifier.
+        data_tests:
+          - not_null
+
+      - name: is_fraud
+        description: Indicates whether the transaction is fraudulent.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: is_flagged_fraud
+        description: Indicates whether the transaction was flagged by the original rule-based system.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
