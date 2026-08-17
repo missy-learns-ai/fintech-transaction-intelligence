@@ -1,0 +1,188 @@
+version: 2
+
+models:
+  - name: int_transaction_enriched
+    description: Adds transaction-level behavioral attributes and risk-oriented flags.
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: transaction_amount_bucket
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['low', 'medium', 'high', 'very_high']
+
+      - name: high_risk_transaction_type_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: high_value_transaction_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: int_balance_validation
+    description: Validates expected sender and recipient balances after each transaction.
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: sender_balance_reconciled_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: recipient_balance_reconciled_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: int_customer_daily_activity
+    description: Customer-day activity summary with sent, received, recipient, transaction type, and fraud metrics.
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null
+
+      - name: transaction_day
+        data_tests:
+          - not_null
+
+      - name: transaction_count
+        data_tests:
+          - not_null
+
+      - name: total_amount_sent
+        data_tests:
+          - not_null
+
+      - name: total_amount_received
+        data_tests:
+          - not_null
+
+      - name: fraudulent_transaction_count
+        data_tests:
+          - not_null
+
+  - name: int_customer_transaction_velocity
+    description: Transaction-level customer velocity features using prior transaction behavior.
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: sender_customer_id
+        data_tests:
+          - not_null
+
+      - name: transactions_previous_24_hours
+        data_tests:
+          - not_null
+
+      - name: transactions_previous_7_days
+        data_tests:
+          - not_null
+
+      - name: transaction_amount_previous_24_hours
+        data_tests:
+          - not_null
+
+      - name: transaction_amount_previous_7_days
+        data_tests:
+          - not_null
+
+      - name: unique_recipients_previous_7_days
+        data_tests:
+          - not_null
+
+      - name: previous_fraudulent_transaction_count
+        data_tests:
+          - not_null
+
+  - name: int_fraud_signals
+    description: Transaction-level analytical fraud and risk signal flags.
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: unusually_large_transaction_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: above_historical_average_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: high_transaction_velocity_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: large_balance_depletion_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: unusually_high_recipient_count_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: prior_fraudulent_activity_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: balance_inconsistency_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: fraud_signal_score
+        data_tests:
+          - not_null
