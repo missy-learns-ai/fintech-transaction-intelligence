@@ -1,0 +1,204 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: Simulated time dimension derived from PaySim transaction steps.
+    columns:
+      - name: date_key
+        description: Primary key for the simulated hourly transaction step.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: transaction_step
+        description: Simulated hour number from the start of the dataset.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: transaction_day
+        description: Simulated day derived from transaction_step.
+        data_tests:
+          - not_null
+
+      - name: transaction_hour
+        description: Simulated hour of day derived from transaction_step.
+        data_tests:
+          - not_null
+
+      - name: time_of_day_bucket
+        description: Time-of-day grouping derived from transaction_hour.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['overnight', 'morning', 'afternoon', 'evening']
+
+  - name: dim_customers
+    description: Customer dimension with lifetime sender activity and fraud history.
+    columns:
+      - name: customer_id
+        description: Primary key for the sender customer.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: first_transaction_day
+        description: First simulated day on which the customer sent a transaction.
+        data_tests:
+          - not_null
+
+      - name: most_recent_transaction_day
+        description: Most recent simulated day on which the customer sent a transaction.
+        data_tests:
+          - not_null
+
+      - name: lifetime_transaction_count
+        description: Total number of transactions sent by the customer.
+        data_tests:
+          - not_null
+
+      - name: lifetime_amount_sent
+        description: Total amount sent by the customer.
+        data_tests:
+          - not_null
+
+      - name: lifetime_amount_received
+        description: Total amount received by the customer when appearing as a recipient.
+        data_tests:
+          - not_null
+
+      - name: has_fraudulent_transaction_flag
+        description: Indicates whether the customer has ever sent a fraudulent transaction.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: dim_recipients
+    description: Recipient dimension with lifetime received transaction activity and fraud exposure.
+    columns:
+      - name: recipient_id
+        description: Primary key for the recipient account/customer/merchant.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: recipient_account_type
+        description: Recipient account classification derived from recipient identifier prefix.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['customer', 'merchant', 'unknown']
+
+      - name: first_received_day
+        description: First simulated day on which the recipient received a transaction.
+        data_tests:
+          - not_null
+
+      - name: most_recent_received_day
+        description: Most recent simulated day on which the recipient received a transaction.
+        data_tests:
+          - not_null
+
+      - name: received_transaction_count
+        description: Total number of transactions received by the recipient.
+        data_tests:
+          - not_null
+
+      - name: total_amount_received
+        description: Total amount received by the recipient.
+        data_tests:
+          - not_null
+
+      - name: has_fraudulent_received_transaction_flag
+        description: Indicates whether the recipient has ever been involved in a fraudulent transaction.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: fct_transactions
+    description: Canonical transaction fact table enriched with customer, balance, velocity, and fraud signal attributes.
+    columns:
+      - name: transaction_id
+        description: Primary key for the transaction.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: date_key
+        description: Foreign key to dim_date.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: customer_id
+        description: Foreign key to dim_customers.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+
+      - name: recipient_id
+        description: Foreign key to dim_recipients.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_recipients')
+                field: recipient_id
+
+      - name: transaction_type
+        description: Standardized PaySim transaction type.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['CASH_IN', 'CASH_OUT', 'DEBIT', 'PAYMENT', 'TRANSFER']
+
+      - name: transaction_amount
+        description: Transaction amount.
+        data_tests:
+          - not_null
+
+      - name: transaction_amount_bucket
+        description: Amount bucket assigned in the transaction enrichment layer.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['low', 'medium', 'high', 'very_high']
+
+      - name: is_fraud
+        description: Indicates whether the transaction is fraudulent.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: is_flagged_fraud
+        description: Indicates whether the transaction was flagged by the original PaySim rule-based system.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: fraud_signal_score
+        description: Count of analytical fraud/risk signals triggered for the transaction.
+        data_tests:
+          - not_null
