@@ -1,0 +1,37 @@
+version: 2
+
+exposures:
+  - name: executive_transaction_dashboard
+    label: Executive Transaction Dashboard
+    type: dashboard
+    maturity: medium
+    description: Executive dashboard for transaction volume, value, fraud rate, flagged activity, and customer activity trends.
+    depends_on:
+      - ref('mart_daily_transaction_metrics')
+      - ref('mart_transaction_type_performance')
+    owner:
+      name: Pratistha
+      email: thepratisthathapa@gmail.com
+
+  - name: customer_360_dashboard
+    label: Customer 360 Dashboard
+    type: dashboard
+    maturity: medium
+    description: Customer analytics dashboard for lifecycle value, activity, fraud exposure, and segmentation.
+    depends_on:
+      - ref('mart_customer_360')
+    owner:
+      name: Pratistha
+      email: thepratisthathapa@gmail.com
+
+  - name: fraud_risk_dashboard
+    label: Fraud Risk Dashboard
+    type: dashboard
+    maturity: medium
+    description: Risk analytics dashboard for fraud signals, risk segments, fraud concentration, and suspicious transaction behavior.
+    depends_on:
+      - ref('mart_fraud_risk_summary')
+      - ref('fct_transactions')
+    owner:
+      name: Pratistha
+      email: thepratisthathapa@gmail.com
